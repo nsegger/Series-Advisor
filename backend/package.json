@@ -1,6 +1,6 @@
 {
   "name": "SeriesA",
-  "license": "GNU",
+  "license": "GNU GENERAL PUBLIC LICENSE",
   "scripts": {
     "dev": "nodemon src/server.js"
   },

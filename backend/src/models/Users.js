@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
 const SALT_WORK_FACTOR = 10;
 
@@ -10,6 +10,10 @@ const userSchema = new Schema({
         index: {unique: true}
     },
     password: {
+        type: String,
+        required: true
+    },
+    display: {
         type: String,
         required: true
     }
@@ -42,7 +46,7 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.comparePwd = function(pass2cmp, cb) {
     bcrypt.compare(pass2cmp, this.password, (err, match) => {
-        if(err) return cb(err);
+        if (err) return cb(err);
 
         cb(null, match);
     });
