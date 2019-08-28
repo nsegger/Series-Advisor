@@ -12,13 +12,13 @@ module.exports = {
                 if (err) return console.error(err);
 
                 if (isMatch) {
-                    res.json({ok: true});
+                    res.json({user: userExists.user, display: userExists.display});
                 } else {
-                    res.json({ok: false});
+                    res/*.status(403)*/.json({error: "Invalid username/password!"});
                 }
             });
         } else {
-            res.json({error: "Invalid username/password"});
+            res/*.status(403)*/.json({error: "Invalid username/password!"});
         }
     }
 }

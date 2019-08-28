@@ -1,35 +1,39 @@
-import React, {useState} from 'react';
-import '../assets/css/bootstrap.css'
-import './Login.css';
+import React, { useState, useRef } from 'react';
+import { Container } from '../styles/login';
+import {authApi} from '../services/api';
 
-import api from '../services/api'
+import '../assets/css/bootstrap.css';
+import logo from '../assets/images/logo2.svg';
 
-import logo from '../assets/images/logo2.svg'
+import history from '../history';
 
-export default function Register({history}) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [display, setDisplay] = useState('');
+
+export default function Register() {
+    const username = useRef();
+    const password = useRef();
+    const display = useRef();
     const [error, setError] = useState('');
 
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const response = await api.post('/user/register', {
-            username,
-            password,
-            display
-        });
+        const formContent = {
+            username: username.current.value,
+            password: password.current.value,
+            display: display.current.value
+        }
 
-        if (response.data['error']) {
-            setError(response.data['error']);
+        const response = authApi.register(formContent)
+
+        if (response['error']) {
+            setError(response['error']);
         } else {
             history.push('/');
         }
     }
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center login-container">
+        <Container>
             <img src={logo} alt="Series Advisor" className="logo"/>
             {error !== '' && <div className="error">{error}</div>}
             <form onSubmit={handleSubmit}>
@@ -38,8 +42,7 @@ export default function Register({history}) {
                         className="form-control" 
                         type="text" 
                         placeholder="Your name"
-                        value={display}
-                        onChange={e => setDisplay(e.target.value)}
+                        ref={display}
                     />
                 </div>
                 <div className="form-group">
@@ -47,8 +50,7 @@ export default function Register({history}) {
                         className="form-control" 
                         type="text" 
                         placeholder="Username"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        ref={username}
                     />
                 </div>
                 <div className="form-group">
@@ -56,13 +58,12 @@ export default function Register({history}) {
                         className="form-control" 
                         type="password" 
                         placeholder="Password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        ref={password}
                     />
                 </div>
                 <button type="submit" className="btn btn-primary w-100">Register</button>
             </form>
-        </div>
+        </Container>
         
     );
 }

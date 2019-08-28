@@ -1,58 +1,64 @@
-import React, {useState} from 'react';
-import '../assets/css/bootstrap.css'
-import './Login.css';
+import React, { useRef } from 'react';
+import { useAuthDataContext } from './authContext';
+import {authApi} from '../services/api';
+import { Redirect } from 'react-router-dom';
 
-import api from '../services/api.js'
+import '../assets/css/bootstrap.css';
+import { Container } from '../styles/login';
+import logo from '../assets/images/logo2.svg';
 
-import logo from '../assets/images/logo2.svg'
+import history from '../history';
 
-export default function Login({ history }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+export default function Login() {
+    const username = useRef();
+    const password = useRef();
+    //const [warn, setWarn] = useState('');
+    
+    const { user, error, onLogin } = useAuthDataContext();
+
 
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const response = await api.post('/login', {
-            username,
-            password
-        });
-
-        if (response.data['error']) {
-            setError(response.data['error']);
-        } else {
-            //history.push('/');
+        const formContent = {
+            username: username.current.value,
+            password: password.current.value,
         }
-    }
 
+        authApi.authenticate(formContent).then(onLogin)
+        
+    }
+            
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center login-container">
-            <img src={logo} alt="Series Advisor" className="logo"/>
-            {error !== '' && <div className="error">{error}</div>}
+        <Container>
+            { user && <Redirect to='/dash'/> }
+            <img src={logo} alt="Series Advisor"/>
+            {error && <div className="error">{error}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <input 
                         className="form-control" 
                         type="text" 
-                        placeholder="Username"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        placeholder="Username*"
+                        ref={username}                        
                     />
                 </div>
                 <div className="form-group">
                     <input 
                         className="form-control"
                         type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        placeholder="Password*"
+                        ref={password}
                     />
                 </div>
-                <button type="button" onClick={e => history.push('/register')} className="btn btn-dark">Register</button>
+                <button 
+                    type="button" 
+                    onClick={e => history.push('/register')} 
+                    className="btn btn-dark reg-btn">
+                    Register
+                </button>
                 <button type="submit" className="btn btn-primary login-btn">Login</button>
             </form>
-        </div>
-        
+        </Container>
     );
 }
